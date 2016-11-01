@@ -1,24 +1,31 @@
 use std::fmt;
-use hyper::Error as hyperError;
+use hyper::Error as HyperError;
 use std::error::Error as StdError;
 use std::collections::HashMap;
 use serde_json;
+use serde_json::Error as JsonError;
+
+use self::Error::{
+    Json,
+    Http,
+    Query
+};
 
 #[derive(Debug)]
-pub struct Error {
-    pub error: String,
-    pub description: String
-
+pub enum Error {
+    Json(serde_json::Error),
+    Http(HyperError),
+    Query {
+        error: String,
+        description: String
+    }
 }
 
 impl Error {
     pub fn from_couch(msg: &str) -> Error {
         let convert = match serde_json::from_str::<HashMap<String, String>>(&msg) {
             Ok(map) => map,
-            _ => return Error {
-                error: "CouchDB error".to_string(),
-                description: "Invalid JSON received".to_string()
-            }
+            Err(e) => return Json(e)
         };
 
         let err = match convert.get("error") {
@@ -31,7 +38,7 @@ impl Error {
             None => "unknown reason".to_string()
         };
 
-        Error {
+        Query {
             error: err,
             description: description
         }
@@ -40,64 +47,77 @@ impl Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}:{}", self.error, self.description)
+        match *self {
+            Json(ref e) => write!(f, "{}", e),
+            Http(ref e) => write!(f, "{}", e),
+            Query{ref error, ref description} => write!(f, "{}:{}", error, description)
+        }
     }
 }
 
 impl StdError for Error {
     fn description(&self) -> &str {
-        &self.description
+        match *self {
+            Json( ref e ) => e.description(),
+            Http( ref e ) => e.description(),
+            Query { .. } => "CouchDB responded with an error"
+        }
     }
 
-    //NOT sure what to do here!!!
     fn cause(&self) -> Option<&StdError> {
-        //Some(&self.error)
-        None
-    }
-}
-
-
-impl From<hyperError> for Error {
-    fn from(err: hyperError) -> Error {
-        Error {
-            error: "request error".to_string(),
-            description: err.to_string()
+        match *self {
+            Json(ref e) => Some(e),
+            Http(ref e) => Some(e),
+            Query{ .. } => None
         }
     }
 }
 
-impl From<String> for Error {
-    fn from(err: String) -> Error {
-        Error {
-            error: "not_found".to_string(),
-            description: err.to_string()
-        }
+
+impl From<HyperError> for Error {
+    fn from(err: HyperError) -> Error {
+        Http(err)
+    }
+}
+
+impl From<JsonError> for Error {
+    fn from(err: JsonError) -> Error {
+        Json(err)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use super::Error::*;
 
     #[test]
     fn from_couch_warns_on_json_parse_error () {
-        let error = Error::from_couch("This will not parse");
-        assert_eq!(error.error, "CouchDB error".to_string());
+        match Error::from_couch("This will not parse") {
+            Json(err) => assert!(true),
+            _ => panic!("I was expecting a Json error!")
+        }
     }
 
     #[test]
     fn from_couch_returns_parsed_json_error () {
         let str = "{\"error\":\"not_found\",\"reason\":\"Database does not exist.\"}";
-        let error = Error::from_couch(str);
-        assert_eq!(error.error, "not_found".to_string());
+        match Error::from_couch(str) {
+            Query {ref error, ..} => assert_eq!(error, "not_found"),
+            _ => panic!("I was expecting query error")
+
+        }
     }
 
     #[test]
     fn from_couch_works_with_different_hashmap_values () {
         let str = "{\"oops\":\"not_found\",\"what_happened\":\"Database does not exist.\"}";
-        let error = Error::from_couch(str);
-        assert_eq!(error.error, "Unknown".to_string());
-        assert_eq!(error.description, "unknown reason".to_string());
+        match Error::from_couch(str) {
+            Query {ref error, ref description} => {
+                assert_eq!(error, "Unknown");
+                assert_eq!(description, "unknown reason");
+            }
+            _ => panic!("I was expecting query error")
+        }
     }
-
 }

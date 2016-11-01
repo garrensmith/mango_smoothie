@@ -11,9 +11,5 @@ fn get_returns_response () {
 #[test]
 fn get_returns_error_response () {
     let res = get("http://tester:testerpass@127.0.0.1:5984/notexistdatabase");
-    match res {
-        Err(error) => println!("BOOM!!!! {}", error),
-        _ => println!("move along")
-    };
-    //assert!(res.is_err());
+    assert!(res.is_err());
 }
