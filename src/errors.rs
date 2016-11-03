@@ -1,6 +1,7 @@
 use std::fmt;
 use hyper::Error as HyperError;
 use std::error::Error as StdError;
+use std::io;
 use std::collections::HashMap;
 use serde_json;
 use serde_json::Error as JsonError;
@@ -8,6 +9,7 @@ use serde_json::Error as JsonError;
 use self::Error::{
     Json,
     Http,
+    Io,
     Query
 };
 
@@ -15,6 +17,7 @@ use self::Error::{
 pub enum Error {
     Json(serde_json::Error),
     Http(HyperError),
+    Io(io::Error),
     Query {
         error: String,
         description: String
@@ -50,6 +53,7 @@ impl fmt::Display for Error {
         match *self {
             Json(ref e) => write!(f, "{}", e),
             Http(ref e) => write!(f, "{}", e),
+            Io(ref e) => write!(f, "{}", e),
             Query{ref error, ref description} => write!(f, "{}:{}", error, description)
         }
     }
@@ -60,6 +64,7 @@ impl StdError for Error {
         match *self {
             Json( ref e ) => e.description(),
             Http( ref e ) => e.description(),
+            Io( ref e ) => e.description(),
             Query { .. } => "CouchDB responded with an error"
         }
     }
@@ -68,6 +73,7 @@ impl StdError for Error {
         match *self {
             Json(ref e) => Some(e),
             Http(ref e) => Some(e),
+            Io(ref e) => Some(e),
             Query{ .. } => None
         }
     }
@@ -83,6 +89,12 @@ impl From<HyperError> for Error {
 impl From<JsonError> for Error {
     fn from(err: JsonError) -> Error {
         Json(err)
+    }
+}
+
+impl From<io::Error> for Error {
+    fn from(err: io::Error) -> Error {
+        Io(err)
     }
 }
 
