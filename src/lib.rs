@@ -12,6 +12,7 @@ extern crate hyper;
 
 pub mod http;
 pub mod errors;
+pub mod query;
 mod database;
 pub use database::database;
 // use http::post;
