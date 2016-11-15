@@ -71,7 +71,7 @@ impl Mango {
         };
 
         match post(&format!("{}/_index", self.url), &body) {
-            Ok(res) => Ok(true),
+            Ok(_) => Ok(true),
             Err(err) => return Err(Error::from(err))
         }
     }

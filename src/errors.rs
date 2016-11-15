@@ -106,7 +106,7 @@ mod tests {
     #[test]
     fn from_couch_warns_on_json_parse_error () {
         match Error::from_couch("This will not parse") {
-            Json(err) => assert!(true),
+            Json(_) => assert!(true),
             _ => panic!("I was expecting a Json error!")
         }
     }

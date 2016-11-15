@@ -1,6 +1,6 @@
 extern crate rustybench;
 
-use rustybench::http::{post, get};
+use rustybench::http::{get};
 
 #[test]
 fn get_returns_response () {

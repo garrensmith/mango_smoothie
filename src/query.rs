@@ -1,5 +1,5 @@
 
-use serde_json;
+//use serde_json;
 
 // macro_rules! query {
 //     ($($key:expr => $val:tt),*) => {
@@ -36,12 +36,8 @@ use serde_json;
 // }
 
 macro_rules! query_type {
-    ("fields" => $fields:expr) => {{
-        println!("field {:?}", $fields);
-        "boom".to_string()
-    }};
-    (
-        {$section:expr => {
+    ({
+        $section:expr => {
             $(
                 $key:expr => {
                     $comp:expr => $val:expr
@@ -49,7 +45,6 @@ macro_rules! query_type {
              ),*
          }
     }) => {{
-        //let mut selector: HashMap<String, Value> = HashMap::new();
         let mut selector = Map::new();
         $(
             let mut kv = Map::new();
@@ -57,7 +52,16 @@ macro_rules! query_type {
             selector.insert($key.to_string(), kv);
             println!("selector {:?} {:?} {:?}", $key, $comp, $val);
         )*
-        selector
+        serde_json::to_value(selector)
+    }};
+    ({
+        $field_section:expr => $fields:expr
+    }) => {{
+        let v = vec!["_boom"];
+        let mut fields = Map::new();
+        println!("field {:?}", $fields);
+        fields.insert($field_section.to_string(), serde_json::to_value(v));
+        serde_json::to_value(fields)
     }};
 }
 
@@ -117,9 +121,8 @@ macro_rules! doc {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use serde_json::{Value};
     use serde_json;
+    use serde_json::{Map};
 
     #[test]
     fn create_selector_query () {
@@ -134,9 +137,26 @@ mod tests {
             }
         });
 
-        let _id = query.get("selector").unwrap().get("_id").unwrap();
-        let name = query.get("selector").unwrap().get("name").unwrap();
-        assert_eq!(_id.get("$eq").unwrap().to_string(), "\"boom\"");
-        assert_eq!(name.get("$lte").unwrap().to_string(), "\"garren\"");
+        let map: Map<String, Map<String, String>> = serde_json::from_value(query.get("selector").unwrap().clone()).unwrap();
+        let _id = map.get("_id").unwrap();
+        let name = map.get("name").unwrap();
+
+        assert_eq!(_id.get("$eq").unwrap().to_string(), "boom");
+        assert_eq!(name.get("$lte").unwrap().to_string(), "garren");
+    }
+
+    #[test]
+    fn set_keys_in_query () {
+        let query = query!({
+            "selector" => {
+                "_id" => {
+                    "$gt" => "1"
+                }
+            },
+            "fields" => ["_id", "name"]
+        });
+
+        //assert_eq!(query.get("fields").unwrap()[0], "_id");
+        //assert_eq!(query.get("fields").unwrap()[1], "name");
     }
 }
