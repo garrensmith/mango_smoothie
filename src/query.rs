@@ -57,10 +57,20 @@ macro_rules! query_type {
     ({
         $field_section:expr => $fields:expr
     }) => {{
-        let v = vec!["_boom"];
+        println!("field ${:?} {:?}", $field_section, $fields);
+        let v: serde_json::Value = match $field_section {
+            "fields" => serde_json::to_value($fields.to_vec()),
+            _ => serde_json::to_value($fields)
+        };
+
+        let v = if $field_section == "fields" {
+            serde_json::to_value($fields.to_vec())
+        } else {
+            serde_json::to_value($fields)
+        };
+        //let v = $fields.to_vec();
         let mut fields = Map::new();
-        println!("field {:?}", $fields);
-        fields.insert($field_section.to_string(), serde_json::to_value(v));
+        fields.insert($field_section.to_string(), v);
         serde_json::to_value(fields)
     }};
 }
@@ -78,24 +88,6 @@ macro_rules! query {
         map
     }};
 }
-
-
-
-// fn main() {
-//     let b = query!({
-//         "selector" => {
-//             "_id" => {
-//                 "$eq" => "boom"
-//             },
-//             "name" => {
-//                 "$lte" => "garren"
-//             }
-//         }//,
-//         //"fields" => ["_id", "_rev"] //tt
-//     });
-//
-//     println!("B {:?}", b);
-// }
 
 /*
 doc! { "title" => "Jaws",
@@ -146,7 +138,7 @@ mod tests {
     }
 
     #[test]
-    fn set_keys_in_query () {
+    fn set_fields_in_query () {
         let query = query!({
             "selector" => {
                 "_id" => {
@@ -156,7 +148,24 @@ mod tests {
             "fields" => ["_id", "name"]
         });
 
-        //assert_eq!(query.get("fields").unwrap()[0], "_id");
-        //assert_eq!(query.get("fields").unwrap()[1], "name");
+        let fields: Map<String, Vec<String>> = serde_json::from_value(query.get("fields").unwrap().clone()).unwrap();
+        assert_eq!(fields.get("fields").unwrap()[0], "_id");
+        assert_eq!(fields.get("fields").unwrap()[1], "name");
+    }
+
+    #[test]
+    fn set_limit_in_query () {
+        let query = query!({
+            "selector" => {
+                "_id" => {
+                    "$gt" => "1"
+                }
+            },
+            "fields" => ["_id", "name"],
+            "limit" => 10
+        });
+
+        let limit: i32 = serde_json::from_value(query.get("limit").unwrap().clone()).unwrap();
+        assert_eq!(limit, 10);
     }
 }
