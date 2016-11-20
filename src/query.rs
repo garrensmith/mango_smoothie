@@ -37,7 +37,7 @@
 
 macro_rules! query_type {
     ({
-        $section:expr => {
+        "selector" => {
             $(
                 $key:expr => {
                     $comp:expr => $val:expr
@@ -54,30 +54,35 @@ macro_rules! query_type {
         )*
         serde_json::to_value(selector)
     }};
-    ({
-        $field_section:expr => $fields:expr
-    }) => {{
-        println!("field ${:?} {:?}", $field_section, $fields);
-        let v: serde_json::Value = match $field_section {
-            "fields" => serde_json::to_value($fields.to_vec()),
-            _ => serde_json::to_value($fields)
-        };
 
-        let v = if $field_section == "fields" {
-            serde_json::to_value($fields.to_vec())
-        } else {
-            serde_json::to_value($fields)
-        };
-        //let v = $fields.to_vec();
-        let mut fields = Map::new();
-        fields.insert($field_section.to_string(), v);
-        serde_json::to_value(fields)
+    ({
+        "fields" => $fields:expr
+    }) => {{
+        println!("field {:?}", $fields);
+        serde_json::to_value($fields.to_vec())
+    }};
+
+    ({
+        "sort" => [$({$key:expr => $sort:expr}),*]
+    }) => {{
+        let mut sort = Map::new();
+        $(
+            sort.insert($key.to_string(), $sort.to_string());
+        )*
+        serde_json::to_value(sort)
+    }};
+
+    ({
+        $section:expr => $fields:expr
+    }) => {{
+        println!("section limit {:?} {:?}", $section, $fields);
+        serde_json::to_value($fields)
     }};
 }
 
 #[macro_export]
 macro_rules! query {
-    ( {$($section:expr => $content:tt),*} ) => {{
+    ( {$($section:tt => $content:tt),*} ) => {{
         use serde_json;
         use serde_json::{Map};
         let mut map = Map::new();
@@ -88,28 +93,6 @@ macro_rules! query {
         map
     }};
 }
-
-/*
-doc! { "title" => "Jaws",
-    "array" => [ 1, 2, 3 ] };
-
-
-#[macro_export]
-macro_rules! doc {
-    () => {{ $crate::Document::new() }};
-
-    ( $($key:expr => $val:tt),* ) => {{
-        let mut document = $crate::Document::new();
-
-        $(
-            document.insert_bson($key.to_owned(), bson!($val));
-        )*
-
-        document
-    }};
-}
-
-*/
 
 #[cfg(test)]
 mod tests {
@@ -148,9 +131,9 @@ mod tests {
             "fields" => ["_id", "name"]
         });
 
-        let fields: Map<String, Vec<String>> = serde_json::from_value(query.get("fields").unwrap().clone()).unwrap();
-        assert_eq!(fields.get("fields").unwrap()[0], "_id");
-        assert_eq!(fields.get("fields").unwrap()[1], "name");
+        let fields: Vec<String> = serde_json::from_value(query.get("fields").unwrap().clone()).unwrap();
+        assert_eq!(fields[0], "_id");
+        assert_eq!(fields[1], "name");
     }
 
     #[test]
@@ -167,5 +150,60 @@ mod tests {
 
         let limit: i32 = serde_json::from_value(query.get("limit").unwrap().clone()).unwrap();
         assert_eq!(limit, 10);
+    }
+
+    #[test]
+    fn set_skip_in_query () {
+        let query = query!({
+            "selector" => {
+                "_id" => {
+                    "$gt" => "1"
+                }
+            },
+            "fields" => ["_id", "name"],
+            "skip" => 3
+        });
+
+        let skip: i32 = serde_json::from_value(query.get("skip").unwrap().clone()).unwrap();
+        assert_eq!(skip, 3);
+    }
+
+    #[test]
+    fn set_sort_in_query () {
+        let query = query!({
+            "selector" => {
+                "_id" => {
+                    "$gt" => "1"
+                }
+            },
+            "fields" => ["_id", "name"],
+            "sort" => [{"_id" => "asc"}]
+        });
+
+        let sort: Map<String, String> = serde_json::from_value(query.get("sort").unwrap().clone()).unwrap();
+        let _id = sort.get("_id").unwrap();
+        assert_eq!(_id, "asc");
+    }
+
+    #[test]
+    fn creates_correct_query_string () {
+        let query = query!({
+            "selector" => {
+                "_id" => {
+                    "$gt" => "1"
+                },
+                "name" => {
+                    "lte" => "bob"
+                }
+            },
+            "fields" => ["_id", "name"],
+            "limit" => 10,
+            "skip" => 3,
+            "sort" => [{"_id" => "asc"}]
+        });
+
+        let query_string = serde_json::to_string(&query).unwrap();
+        println!("qs {:?}", query_string);
+        assert_eq!(query_string, "{\"fields\":[\"_id\",\"name\"],\"limit\":10,\"selector\":{\"_id\":{\"$gt\":\"1\"},\"name\":{\"lte\":\"bob\"}},\"skip\":3,\"sort\":{\"_id\":\"asc\"}}");
     }
 }
