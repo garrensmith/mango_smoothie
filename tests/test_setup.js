@@ -1,7 +1,7 @@
 const request = require('request');
 const async = require('async');
 
-const animals = require('../test/animal-db.json');
+const animals = require('./animal-db.json');
 
 const conflictingDoc = 'zebra';
 
