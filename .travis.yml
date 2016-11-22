@@ -1,0 +1,13 @@
+language: rust
+rust:
+  - nightly
+
+services:
+  - docker
+
+before_script:
+  - docker run -p 5984:5984 klaemo/couchdb:2.0-dev --with-haproxy -a tester:testerpass
+  - npm install request async
+  - sleep 30
+  - curl http://127.0.0.1:5984
+  - node ./test/test_setup.js

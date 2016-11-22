@@ -1,5 +1,6 @@
 use std::fmt;
 use hyper::Error as HyperError;
+use hyper::error::ParseError;
 use std::error::Error as StdError;
 use std::io;
 use std::collections::HashMap;
@@ -10,13 +11,15 @@ use self::Error::{
     Json,
     Http,
     Io,
-    Query
+    Query,
+    Url
 };
 
 #[derive(Debug)]
 pub enum Error {
     Json(serde_json::Error),
     Http(HyperError),
+    Url(ParseError),
     Io(io::Error),
     Query {
         error: String,
@@ -54,6 +57,7 @@ impl fmt::Display for Error {
             Json(ref e) => write!(f, "{}", e),
             Http(ref e) => write!(f, "{}", e),
             Io(ref e) => write!(f, "{}", e),
+            Url(ref e) => write!(f, "{}", e),
             Query{ref error, ref description} => write!(f, "{}:{}", error, description)
         }
     }
@@ -65,6 +69,7 @@ impl StdError for Error {
             Json( ref e ) => e.description(),
             Http( ref e ) => e.description(),
             Io( ref e ) => e.description(),
+            Url( ref e ) => e.description(),
             Query { .. } => "CouchDB responded with an error"
         }
     }
@@ -74,6 +79,7 @@ impl StdError for Error {
             Json(ref e) => Some(e),
             Http(ref e) => Some(e),
             Io(ref e) => Some(e),
+            Url(ref e) => Some(e),
             Query{ .. } => None
         }
     }
@@ -83,6 +89,12 @@ impl StdError for Error {
 impl From<HyperError> for Error {
     fn from(err: HyperError) -> Error {
         Http(err)
+    }
+}
+
+impl From<ParseError> for Error {
+    fn from(err: ParseError) -> Error {
+        Url(err)
     }
 }
 

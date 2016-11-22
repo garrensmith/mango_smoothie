@@ -1,35 +1,56 @@
-use hyper::Client;
+use hyper::{Client, Url};
 use hyper::status::StatusCode;
-use hyper::header::{ContentType};
+use hyper::header::{ContentType, Headers, Authorization, Basic};
+//use hyper::client::IntoUrl;
 use std::io::Read;
-
 use errors::{Error};
 
-pub fn post (url: &str, body: &str) -> Result<String, Error> {
+fn get_headers (url: &Url) -> Headers {
+    let mut headers = Headers::new();
+
+    headers.set(ContentType::json());
+    headers.set(
+       Authorization(
+           Basic {
+               username: url.username().to_string(),
+               password: match url.password() {
+                   None => None,
+                   Some(password) => Some(password.to_string())
+               }
+           }
+       )
+    );
+
+    headers
+}
+
+pub fn post (url: &Url, body: &str) -> Result<String, Error> {
+    let headers = get_headers(&url);
     let client = Client::new();
     let mut res = try!(client
-                    .post(url)
-                    .header(ContentType::json())
+                    .post(url.clone())
+                    .headers(headers)
                     .body(body)
                     .send());
 
     let mut resp = String::new();
     res.read_to_string(&mut resp).unwrap();
-    println!("POST QUERY {} {}",url, resp);
-    println!("{}", res.status);
+    println!("POST QUERY {} {}",url.to_string(), resp);
+    println!("{}", body);
 
-    if res.status == StatusCode::Ok {
-        Ok(resp)
-    } else {
-        Err(Error::from_couch(&resp))
+    match res.status {
+        StatusCode::Created => Ok(resp),
+        StatusCode::Ok => Ok(resp),
+        _ => Err(Error::from_couch(&resp))
     }
 }
 
-pub fn get (url :&str) -> Result<String, Error> {
+pub fn get (url :&Url) -> Result<String, Error> {
+    let headers = get_headers(&url);
     let client = Client::new();
     let mut res = try!(client
-                    .get(url)
-                    .header(ContentType::json())
+                    .get(url.clone())
+                    .headers(headers)
                     .send());
 
     let mut resp = String::new();

@@ -3,10 +3,11 @@ use serde_json;
 use errors::Error;
 use std::collections::HashMap;
 use std::collections::BTreeMap;
+use hyper::Url;
 
 
 pub struct Mango {
-    url: String
+    url: Url
 
 }
 
@@ -16,21 +17,6 @@ struct NewIndex<'a> {
     json_type: &'a str,
     index: HashMap<&'a str, Vec<&'a str>>
 }
-
-/*
-"{
- "ddoc": null,
- "name": "_all_docs",
- "type": "special",
- "def": {
-  "fields": [
-   {
-    "_id": "asc"
-   }
-  ]
- }
-}"
-*/
 
 #[derive(Deserialize)]
 pub struct IndexDef {
@@ -53,8 +39,11 @@ pub struct IndexList {
 }
 
 impl Mango {
-    fn new<S>(url: S) -> Mango where S: Into<String> {
-       Mango { url: url.into() }
+    fn new<S>(url_str: S) -> Result<Mango, Error> where S: Into<String> {
+        match Url::parse(&url_str.into()) {
+            Ok(url) => Ok(Mango { url: url }),
+            Err(err) => Err(Error::from(err))
+        }
     }
 
     pub fn create_index(self, fields: &[&str]) -> Result<bool, Error> {
@@ -70,17 +59,16 @@ impl Mango {
             Err(err) => return Err(Error::from(err))
         };
 
-        match post(&format!("{}/_index", self.url), &body) {
-            Ok(_) => Ok(true),
-            Err(err) => return Err(Error::from(err))
-        }
+        println!("self.url {:?}", self.url);
+
+        let url = try!(Url::parse(&format!("{}/_index", self.url.to_string())));
+        try!(post(&url, &body));
+        Ok(true)
     }
 
     pub fn list_indexes(self) -> Result<IndexList, Error> {
-        let resp = match get(&format!("{}/_index", self.url)) {
-            Ok(res) => res,
-            Err(err) => return Err(Error::from(err))
-        };
+        let url = try!(Url::parse(&format!("{}/_index", self.url.to_string())));
+        let resp = try!(get(&url));
 
         match serde_json::from_str::<IndexList>(&resp) {
             Ok(ind) => Ok(ind),
@@ -92,6 +80,6 @@ impl Mango {
 
 
 
-pub fn database (url: &str) -> Mango {
+pub fn database (url: &str) -> Result<Mango, Error> {
     Mango::new(url)
 }

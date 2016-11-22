@@ -4,7 +4,7 @@ use rustybench::{database};
 
 #[test]
 fn lists_index () {
-    match database("http://tester:testerpass@127.0.0.1:5984/animaldb")
+    match database("http://tester:testerpass@127.0.0.1:5984/animaldb").unwrap()
                .list_indexes() {
                    Ok(indexes) => {
                        assert!(indexes.total_rows > 0);
