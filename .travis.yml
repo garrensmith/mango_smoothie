@@ -10,4 +10,4 @@ before_script:
   - npm install request async
   - sleep 30
   - curl http://127.0.0.1:5984
-  - node ./test/test_setup.js
+  - node ./tests/test_setup.js
