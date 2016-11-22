@@ -171,3 +171,7 @@ function createAnimalDb (url, cb) {
 }
 
 }
+
+createAnimalDb("http://tester:testerpass@localhost:5984/", function () {
+  console.log('done');
+});
