@@ -1,7 +1,7 @@
-extern crate rustybench;
+extern crate mango_smoothie;
 extern crate hyper;
 
-use rustybench::{database};
+use mango_smoothie::{database};
 
 #[test]
 fn creates_index () {

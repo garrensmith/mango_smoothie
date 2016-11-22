@@ -1,6 +1,6 @@
-extern crate rustybench;
+extern crate mango_smoothie;
 
-use rustybench::{database};
+use mango_smoothie::{database};
 
 #[test]
 fn lists_index () {

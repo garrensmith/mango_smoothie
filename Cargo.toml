@@ -1,7 +1,8 @@
 [package]
-name = "rustybench"
+name = "mango_smoothie"
 version = "0.1.0"
 authors = ["Garren Smith <garren.smith@gmail.com>"]
+license = "MIT"
 
 [dependencies]
 hyper = "0.9.10"

@@ -1,6 +1,6 @@
-// extern crate rustybench;
+// extern crate mango_smoothie;
 //
-// use rustybench::{QueryBuilder, Find};
+// use mango_smoothie::{QueryBuilder, Find};
 //
 // #[test]
 // fn runs_find_returns () {

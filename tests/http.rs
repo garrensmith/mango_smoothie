@@ -1,7 +1,7 @@
-extern crate rustybench;
+extern crate mango_smoothie;
 extern crate hyper;
 
-use rustybench::http::{get};
+use mango_smoothie::http::{get};
 use hyper::Url;
 
 #[test]
