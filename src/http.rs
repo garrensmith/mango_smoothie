@@ -5,7 +5,7 @@ use hyper::header::{ContentType, Headers, Authorization, Basic};
 use std::io::Read;
 use errors::{Error};
 
-fn get_headers (url: &Url) -> Headers {
+fn get_headers (url: Url) -> Headers {
     let mut headers = Headers::new();
 
     headers.set(ContentType::json());
@@ -25,7 +25,7 @@ fn get_headers (url: &Url) -> Headers {
 }
 
 pub fn post (url: &Url, body: &str) -> Result<String, Error> {
-    let headers = get_headers(&url);
+    let headers = get_headers(url.clone());
     let client = Client::new();
     let mut res = try!(client
                     .post(url.clone())
@@ -39,14 +39,13 @@ pub fn post (url: &Url, body: &str) -> Result<String, Error> {
     println!("{}", body);
 
     match res.status {
-        StatusCode::Created => Ok(resp),
-        StatusCode::Ok => Ok(resp),
+        StatusCode::Created | StatusCode::Ok => Ok(resp),
         _ => Err(Error::from_couch(&resp))
     }
 }
 
 pub fn get (url :&Url) -> Result<String, Error> {
-    let headers = get_headers(&url);
+    let headers = get_headers(url.clone());
     let client = Client::new();
     let mut res = try!(client
                     .get(url.clone())

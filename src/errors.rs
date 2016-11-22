@@ -29,7 +29,7 @@ pub enum Error {
 
 impl Error {
     pub fn from_couch(msg: &str) -> Error {
-        let convert = match serde_json::from_str::<HashMap<String, String>>(&msg) {
+        let convert = match serde_json::from_str::<HashMap<String, String>>(msg) {
             Ok(map) => map,
             Err(e) => return Json(e)
         };

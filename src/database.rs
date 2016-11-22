@@ -12,7 +12,7 @@ pub struct Mango {
 }
 
 #[derive(Serialize)]
-struct NewIndex<'a> {
+pub struct NewIndex<'a> {
     #[serde(rename = "type")]
     json_type: &'a str,
     index: HashMap<&'a str, Vec<&'a str>>
