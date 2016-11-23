@@ -3,6 +3,10 @@ name = "mango_smoothie"
 version = "0.1.0"
 authors = ["Garren Smith <garren.smith@gmail.com>"]
 license = "MIT"
+description = "A client side library for CouchDB Mango/Cloudant Query"
+repository = "https://github.com/garrensmith/mango_smoothie"
+documentation = ""
+keywords = ["couchdb", "database", "nosql", "mango"]
 
 [dependencies]
 hyper = "0.9.10"

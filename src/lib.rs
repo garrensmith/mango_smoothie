@@ -10,6 +10,7 @@ extern crate hyper;
 
 pub mod http;
 pub mod errors;
+#[macro_use]
 pub mod query;
 mod database;
 pub use database::database;

@@ -35,6 +35,7 @@
 //     }};
 // }
 
+#[macro_export]
 macro_rules! query_type {
     ({
         "selector" => {
@@ -80,11 +81,14 @@ macro_rules! query_type {
     }};
 }
 
+
 #[macro_export]
 macro_rules! query {
     ( {$($section:tt => $content:tt),*} ) => {{
-        use serde_json;
-        use serde_json::{Map};
+        extern crate serde_json;
+        pub type Map<K,V> = serde_json::Map<K, V>;
+        //use serde_json;
+        //use serde_json::{Map};
         let mut map = Map::new();
         $(
             println!("section {:?}", $section);
