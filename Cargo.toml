@@ -5,7 +5,7 @@ authors = ["Garren Smith <garren.smith@gmail.com>"]
 license = "MIT"
 description = "A client side library for CouchDB Mango/Cloudant Query"
 repository = "https://github.com/garrensmith/mango_smoothie"
-documentation = ""
+documentation = "https://docs.rs/mango_smoothie/"
 keywords = ["couchdb", "database", "nosql", "mango"]
 exclude = [
     "node_modules"
