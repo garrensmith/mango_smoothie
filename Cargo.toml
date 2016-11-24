@@ -7,6 +7,9 @@ description = "A client side library for CouchDB Mango/Cloudant Query"
 repository = "https://github.com/garrensmith/mango_smoothie"
 documentation = ""
 keywords = ["couchdb", "database", "nosql", "mango"]
+exclude = [
+    "node_modules"
+]
 
 [dependencies]
 hyper = "0.9.10"
