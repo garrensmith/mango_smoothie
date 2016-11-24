@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["database","The entry point for each Mango Smoothie request"]],"macro":[["query","The main query that processes the query and builds a BtreeMap that can be JSON serialized"],["query_type","Used to create a BtreeMap for each query section"]],"mod":[["errors",""],["http",""]]});

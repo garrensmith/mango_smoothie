@@ -7,6 +7,7 @@ use std::collections::BTreeMap;
 use hyper::Url;
 
 
+
 pub struct Mango {
     url: Url
 }
@@ -99,7 +100,7 @@ impl Mango {
 }
 
 
-
+/// The entry point for each Mango Smoothie request
 pub fn database (url: &str) -> Result<Mango, Error> {
     Mango::new(url)
 }

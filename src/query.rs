@@ -1,40 +1,5 @@
 
-//use serde_json;
-
-// macro_rules! query {
-//     ($($key:expr => $val:tt),*) => {
-//         $(
-//             println!("e {:?} {:?}", $key, $val);
-//         )*
-//     };
-//
-// }
-
-/*
-{
-  "selector": {
-    "year": {
-      "$gt": 2010
-    }
-  },
-  "fields": ["_id", "_rev", "year", "title"],
-  "sort": [{"year": "asc"}],
-  "limit": 10,
-  "skip": 0
-}
-
-*/
-
-// macro_rules! query {
-//      ({$($section:expr => {$($key:expr => {$comp:expr => $val:expr}),*}),*}) => {{
-//         $(
-//             $(
-//                 println!("out ${:?} {:?} {:?} {:?}", $section, $key, $comp, $val);
-//             )*
-//         )*
-//     }};
-// }
-
+/// Used to create a BtreeMap for each query section
 #[macro_export]
 macro_rules! query_type {
     ({
@@ -81,7 +46,7 @@ macro_rules! query_type {
     }};
 }
 
-
+/// The main query that processes the query and builds a BtreeMap that can be JSON serialized
 #[macro_export]
 macro_rules! query {
     ( {$($section:tt => $content:tt),*} ) => {{

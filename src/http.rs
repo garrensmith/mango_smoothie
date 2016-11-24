@@ -24,6 +24,7 @@ fn get_headers (url: Url) -> Headers {
     headers
 }
 
+#[doc(hidden)]
 pub fn post (url: &Url, body: &str) -> Result<String, Error> {
     let headers = get_headers(url.clone());
     let client = Client::new();
@@ -44,6 +45,7 @@ pub fn post (url: &Url, body: &str) -> Result<String, Error> {
     }
 }
 
+#[doc(hidden)]
 pub fn get (url :&Url) -> Result<String, Error> {
     let headers = get_headers(url.clone());
     let client = Client::new();

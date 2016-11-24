@@ -1,5 +1,4 @@
 extern crate mango_smoothie;
-extern crate hyper;
 
 use mango_smoothie::{database};
 
