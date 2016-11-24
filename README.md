@@ -2,6 +2,8 @@
 
 A CouchDB Mango/Cloudant query client for rust. It supports creating indexes, listing indexes and querying indexes
 
+For (docs)[http://garrensmith.com/mango_smoothie/]
+
 ```
 #[macro_use]
 extern crate mango_smoothie;

@@ -1,3 +1,4 @@
+#![doc(html_root_url = "http://garrensmith.com/mango_smoothie/")]
 //! Mango Smoothie
 
 //! Mango Smoothie is a [CouchDB Mango](http://docs.couchdb.org/en/latest/api/database/find.html) /
