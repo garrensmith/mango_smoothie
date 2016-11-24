@@ -9,7 +9,7 @@
 //! To create an index first specify the url to the CouchDB/Cloudant instance, then
 //! specify the fields to be indexed.
 //!
-//!```rust, ignore
+//!```ignore
 //! extern crate mango_smoothie;
 //! use mango_smoothie::{database};
 //!
