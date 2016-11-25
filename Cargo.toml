@@ -1,6 +1,6 @@
 [package]
 name = "mango_smoothie"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Garren Smith <garren.smith@gmail.com>"]
 license = "MIT"
 description = "A client side library for CouchDB Mango/Cloudant Query"
@@ -13,6 +13,6 @@ exclude = [
 
 [dependencies]
 hyper = "0.9.10"
-serde = "0.8"
-serde_json = "0.8"
-serde_derive = "0.8"
+serde = "~0.8"
+serde_json = "~0.8"
+serde_derive = "~0.8"
