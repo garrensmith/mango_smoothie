@@ -5,18 +5,19 @@ A CouchDB Mango/Cloudant query client for rust. It supports creating indexes, li
 For (docs)[http://garrensmith.com/mango_smoothie/]
 
 ```
-#[macro_use]
 extern crate mango_smoothie;
-use mango_smoothie::{database};
+use mango_smoothie::database;
+#[macro_use]
+extern crate serde_json;
 
 
-let query_resp = db.query_index(query!({
-                "selector" => {
-                    "diet" => {
-                        "$eq" => "omnivore"
+let query_resp = db.query_index(json!({
+                "selector": {
+                    "diet": {
+                        "$eq": "omnivore"
                     }
                 },
-                "fields" => ["_id", "_rev", "name", "class", "diet"]
+                "fields": ["_id", "_rev", "name", "class", "diet"]
              }));
 
   let result = query_resp.unwrap();

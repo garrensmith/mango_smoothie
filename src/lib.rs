@@ -36,7 +36,6 @@
 //! macro to help with querying indexes.
 //!
 //! ``` ignore
-//! #[macro_use]
 //! extern crate mango_smoothie;
 //! use mango_smoothie::{database};
 //! #[macro_use]
