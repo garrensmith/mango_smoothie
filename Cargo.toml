@@ -1,6 +1,6 @@
 [package]
 name = "mango_smoothie"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Garren Smith <garren.smith@gmail.com>"]
 license = "MIT"
 description = "A client side library for CouchDB Mango/Cloudant Query"
