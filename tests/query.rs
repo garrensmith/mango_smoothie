@@ -1,20 +1,21 @@
-#[macro_use]
 extern crate mango_smoothie;
-use mango_smoothie::{database};
+use mango_smoothie::database;
+#[macro_use]
+extern crate serde_json;
 
 #[test]
-fn creates_index () {
+fn queries_index() {
     let mut db = database("http://tester:testerpass@127.0.0.1:5984/animaldb").unwrap();
     let resp = db.create_index(&["diet"]);
     assert!(resp.is_ok());
 
-    let query_resp = db.query_index(query!({
-                  "selector" => {
-                      "diet" => {
-                          "$eq" => "omnivore"
+    let query_resp = db.query_index(json!({
+                  "selector": {
+                      "diet": {
+                          "$eq": "omnivore"
                       }
                   },
-                  "fields" => ["_id", "_rev", "name", "class", "diet"]
+                  "fields": ["_id", "_rev", "name", "class", "diet"]
                }));
 
     assert!(query_resp.is_ok());
