@@ -9,8 +9,9 @@
 
     <title>lib.rs.html -- source</title>
 
-    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
     
 
     
@@ -115,10 +116,6 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>doc</span>(<span class='ident'>html_root_url</span> <span class='op'>=</span> <span class='string'>&quot;http://garrensmith.com/mango_smoothie/&quot;</span>)]</span>
 <span class='doccomment'>//! Mango Smoothie</span>
@@ -126,63 +123,60 @@
 <span class='doccomment'>//! Mango Smoothie is a [CouchDB Mango](http://docs.couchdb.org/en/latest/api/database/find.html) /</span>
 <span class='doccomment'>//! [Cloudant Query](https://docs.cloudant.com/cloudant_query.html) client library.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//!# Create Indexes</span>
+<span class='doccomment'>//! # Create Indexes</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! To create an index first specify the url to the CouchDB/Cloudant instance, then</span>
 <span class='doccomment'>//! specify the fields to be indexed.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//!```ignore</span>
+<span class='doccomment'>//! ```ignore</span>
 <span class='doccomment'>//! extern crate mango_smoothie;</span>
 <span class='doccomment'>//! use mango_smoothie::{database};</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! let resp = database(&quot;http://tester:testerpass@127.0.0.1:5984/animaldb&quot;).unwrap()</span>
 <span class='doccomment'>//!           .create_index(&amp;[&quot;class&quot;, &quot;name&quot;]);</span>
-<span class='doccomment'>//!```</span>
+<span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//!# View Indexes</span>
+<span class='doccomment'>//! # View Indexes</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! To list all the available indexes do the following:</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//!``` ignore</span>
+<span class='doccomment'>//! ``` ignore</span>
 <span class='doccomment'>//!   let indexes = database(&quot;http://tester:testerpass@127.0.0.1:5984/animaldb&quot;).unwrap()</span>
 <span class='doccomment'>//!               .list_indexes().unwrap();</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//!   assert!(indexes.total_rows &gt; 0);</span>
 <span class='doccomment'>//!   assert_eq!(indexes.indexes[0].name, &quot;_all_docs&quot;.to_string());</span>
 <span class='doccomment'>//!   assert!(indexes.indexes[0].def.fields[0].contains_key(&amp;&quot;_id&quot;.to_string()));</span>
-<span class='doccomment'>//!```</span>
+<span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//!# Query Indexes</span>
+<span class='doccomment'>//! # Query Indexes</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Mango Smoothie has a macro to help with querying indexes.</span>
+<span class='doccomment'>//! Mango Smoothie uses the [serde_json](https://docs.serde.rs/serde_json/)</span>
+<span class='doccomment'>//! macro to help with querying indexes.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//!``` ignore</span>
-<span class='doccomment'>//! #[macro_use]</span>
+<span class='doccomment'>//! ``` ignore</span>
 <span class='doccomment'>//! extern crate mango_smoothie;</span>
 <span class='doccomment'>//! use mango_smoothie::{database};</span>
+<span class='doccomment'>//! #[macro_use]</span>
+<span class='doccomment'>//! extern crate serde_json;</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! let query = query!({</span>
-<span class='doccomment'>//!    &quot;selector&quot; =&gt; {</span>
-<span class='doccomment'>//!       &quot;_id&quot; =&gt; {</span>
-<span class='doccomment'>//!         &quot;$gt&quot; =&gt; &quot;1&quot;</span>
+<span class='doccomment'>//! let query = json!({</span>
+<span class='doccomment'>//!    &quot;selector&quot;: {</span>
+<span class='doccomment'>//!       &quot;_id&quot;: {</span>
+<span class='doccomment'>//!         &quot;$gt&quot;: &quot;1&quot;</span>
 <span class='doccomment'>//!       }</span>
 <span class='doccomment'>//!     },</span>
-<span class='doccomment'>//!     &quot;fields&quot; =&gt; [&quot;_id&quot;, &quot;name&quot;],</span>
-<span class='doccomment'>//!     &quot;skip&quot; =&gt; 3,</span>
-<span class='doccomment'>//!     &quot;sort&quot; =&gt; [{&quot;_id&quot; =&gt; &quot;asc&quot;}]</span>
+<span class='doccomment'>//!     &quot;fields&quot;: [&quot;_id&quot;, &quot;name&quot;],</span>
+<span class='doccomment'>//!     &quot;skip&quot;: 3,</span>
+<span class='doccomment'>//!     &quot;sort&quot;: [{&quot;_id&quot;: &quot;asc&quot;}]</span>
 <span class='doccomment'>//! });</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! let query_resp = db.query_index(query).unwrap();</span>
 <span class='doccomment'>//! assert_eq!(result.docs.len(), 5);</span>
 <span class='doccomment'>//! let doc = &amp;result.docs[0];</span>
 <span class='doccomment'>//! assert_eq!(doc.get(&quot;class&quot;).unwrap().as_str().unwrap(), &quot;mammal&quot;);</span>
-<span class='doccomment'>//!```</span>
+<span class='doccomment'>//! ```</span>
 
-
-
-
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>proc_macro</span>)]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>custom_attribute</span>)]</span>
 
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>serde_derive</span>;
@@ -193,8 +187,7 @@
 
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>http</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>errors</span>;
-<span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>query</span>;
+
 <span class='kw'>mod</span> <span class='ident'>database</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>database</span>::<span class='ident'>database</span>;
 </pre>
@@ -252,11 +245,11 @@
     
 
     <script>
-        window.rootPath = "../../../";
+        window.rootPath = "../../";
         window.currentCrate = "mango_smoothie";
     </script>
-    <script src="../../../jquery.js"></script>
-    <script src="../../../main.js"></script>
-    <script defer src="../../../search-index.js"></script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

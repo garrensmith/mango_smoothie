@@ -9,8 +9,9 @@
 
     <title>errors.rs.html -- source</title>
 
-    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
     
 
     
@@ -179,16 +180,6 @@
 <span id="135">135</span>
 <span id="136">136</span>
 <span id="137">137</span>
-<span id="138">138</span>
-<span id="139">139</span>
-<span id="140">140</span>
-<span id="141">141</span>
-<span id="142">142</span>
-<span id="143">143</span>
-<span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 <span class='kw'>use</span> <span class='ident'>hyper</span>::<span class='ident'>Error</span> <span class='kw'>as</span> <span class='ident'>HyperError</span>;
@@ -199,13 +190,7 @@
 <span class='kw'>use</span> <span class='ident'>serde_json</span>;
 <span class='kw'>use</span> <span class='ident'>serde_json</span>::<span class='ident'>Error</span> <span class='kw'>as</span> <span class='ident'>JsonError</span>;
 
-<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>Error</span>::{
-    <span class='ident'>Json</span>,
-    <span class='ident'>Http</span>,
-    <span class='ident'>Io</span>,
-    <span class='ident'>Query</span>,
-    <span class='ident'>Url</span>
-};
+<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>Error</span>::{<span class='ident'>Json</span>, <span class='ident'>Http</span>, <span class='ident'>Io</span>, <span class='ident'>Query</span>, <span class='ident'>Url</span>};
 
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Error</span> {
@@ -213,66 +198,63 @@
     <span class='ident'>Http</span>(<span class='ident'>HyperError</span>),
     <span class='ident'>Url</span>(<span class='ident'>ParseError</span>),
     <span class='ident'>Io</span>(<span class='ident'>io</span>::<span class='ident'>Error</span>),
-    <span class='ident'>Query</span> {
-        <span class='ident'>error</span>: <span class='ident'>String</span>,
-        <span class='ident'>description</span>: <span class='ident'>String</span>
-    }
+    <span class='ident'>Query</span> { <span class='ident'>error</span>: <span class='ident'>String</span>, <span class='ident'>description</span>: <span class='ident'>String</span> },
 }
 
 <span class='kw'>impl</span> <span class='ident'>Error</span> {
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_couch</span>(<span class='ident'>msg</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Error</span> {
         <span class='kw'>let</span> <span class='ident'>convert</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>serde_json</span>::<span class='ident'>from_str</span>::<span class='op'>&lt;</span><span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='ident'>String</span><span class='op'>&gt;&gt;</span>(<span class='ident'>msg</span>) {
             <span class='prelude-val'>Ok</span>(<span class='ident'>map</span>) <span class='op'>=&gt;</span> <span class='ident'>map</span>,
-            <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='ident'>Json</span>(<span class='ident'>e</span>)
+            <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='ident'>Json</span>(<span class='ident'>e</span>),
         };
 
         <span class='kw'>let</span> <span class='ident'>err</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>convert</span>.<span class='ident'>get</span>(<span class='string'>&quot;error&quot;</span>) {
             <span class='prelude-val'>Some</span>(<span class='ident'>msg</span>) <span class='op'>=&gt;</span> <span class='ident'>msg</span>.<span class='ident'>to_string</span>(),
-            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='string'>&quot;Unknown&quot;</span>.<span class='ident'>to_string</span>()
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='string'>&quot;Unknown&quot;</span>.<span class='ident'>to_string</span>(),
         };
 
         <span class='kw'>let</span> <span class='ident'>description</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>convert</span>.<span class='ident'>get</span>(<span class='string'>&quot;reason&quot;</span>) {
             <span class='prelude-val'>Some</span>(<span class='ident'>msg</span>) <span class='op'>=&gt;</span> <span class='ident'>msg</span>.<span class='ident'>to_string</span>(),
-            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='string'>&quot;unknown reason&quot;</span>.<span class='ident'>to_string</span>()
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='string'>&quot;unknown reason&quot;</span>.<span class='ident'>to_string</span>(),
         };
 
         <span class='ident'>Query</span> {
             <span class='ident'>error</span>: <span class='ident'>err</span>,
-            <span class='ident'>description</span>: <span class='ident'>description</span>
+            <span class='ident'>description</span>: <span class='ident'>description</span>,
         }
     }
 }
 
 <span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
     <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
-        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
+        <span class='kw'>match</span> <span class='kw-2'>*</span><span class='self'>self</span> {
             <span class='ident'>Json</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>),
             <span class='ident'>Http</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>),
             <span class='ident'>Io</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>),
             <span class='ident'>Url</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>e</span>),
-            <span class='ident'>Query</span>{<span class='kw-2'>ref</span> <span class='ident'>error</span>, <span class='kw-2'>ref</span> <span class='ident'>description</span>} <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}:{}&quot;</span>, <span class='ident'>error</span>, <span class='ident'>description</span>)
+            <span class='ident'>Query</span> { <span class='kw-2'>ref</span> <span class='ident'>error</span>, <span class='kw-2'>ref</span> <span class='ident'>description</span> } <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}:{}&quot;</span>, <span class='ident'>error</span>, <span class='ident'>description</span>),
         }
     }
 }
 
 <span class='kw'>impl</span> <span class='ident'>StdError</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
     <span class='kw'>fn</span> <span class='ident'>description</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>str</span> {
-        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>Json</span>( <span class='kw-2'>ref</span> <span class='ident'>e</span> ) <span class='op'>=&gt;</span> <span class='ident'>e</span>.<span class='ident'>description</span>(),
-            <span class='ident'>Http</span>( <span class='kw-2'>ref</span> <span class='ident'>e</span> ) <span class='op'>=&gt;</span> <span class='ident'>e</span>.<span class='ident'>description</span>(),
-            <span class='ident'>Io</span>( <span class='kw-2'>ref</span> <span class='ident'>e</span> ) <span class='op'>=&gt;</span> <span class='ident'>e</span>.<span class='ident'>description</span>(),
-            <span class='ident'>Url</span>( <span class='kw-2'>ref</span> <span class='ident'>e</span> ) <span class='op'>=&gt;</span> <span class='ident'>e</span>.<span class='ident'>description</span>(),
-            <span class='ident'>Query</span> { .. } <span class='op'>=&gt;</span> <span class='string'>&quot;CouchDB responded with an error&quot;</span>
+        <span class='kw'>match</span> <span class='kw-2'>*</span><span class='self'>self</span> {
+            <span class='ident'>Json</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='ident'>e</span>.<span class='ident'>description</span>(),
+            <span class='ident'>Http</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='ident'>e</span>.<span class='ident'>description</span>(),
+            <span class='ident'>Io</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='ident'>e</span>.<span class='ident'>description</span>(),
+            <span class='ident'>Url</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='ident'>e</span>.<span class='ident'>description</span>(),
+            <span class='ident'>Query</span> { .. } <span class='op'>=&gt;</span> <span class='string'>&quot;CouchDB responded with an error&quot;</span>,
         }
     }
 
     <span class='kw'>fn</span> <span class='ident'>cause</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>StdError</span><span class='op'>&gt;</span> {
-        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
+        <span class='kw'>match</span> <span class='kw-2'>*</span><span class='self'>self</span> {
             <span class='ident'>Json</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>e</span>),
             <span class='ident'>Http</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>e</span>),
             <span class='ident'>Io</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>e</span>),
             <span class='ident'>Url</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>e</span>),
-            <span class='ident'>Query</span>{ .. } <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>
+            <span class='ident'>Query</span> { .. } <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
         }
     }
 }
@@ -304,36 +286,35 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>Error</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='kw-2'>*</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>from_couch_warns_on_json_parse_error</span> () {
+    <span class='kw'>fn</span> <span class='ident'>from_couch_warns_on_json_parse_error</span>() {
         <span class='kw'>match</span> <span class='ident'>Error</span>::<span class='ident'>from_couch</span>(<span class='string'>&quot;This will not parse&quot;</span>) {
             <span class='ident'>Json</span>(_) <span class='op'>=&gt;</span> <span class='macro'>assert</span><span class='macro'>!</span>(<span class='bool-val'>true</span>),
-            _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;I was expecting a Json error!&quot;</span>)
+            _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;I was expecting a Json error!&quot;</span>),
         }
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>from_couch_returns_parsed_json_error</span> () {
+    <span class='kw'>fn</span> <span class='ident'>from_couch_returns_parsed_json_error</span>() {
         <span class='kw'>let</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;{\&quot;error\&quot;:\&quot;not_found\&quot;,\&quot;reason\&quot;:\&quot;Database does not exist.\&quot;}&quot;</span>;
         <span class='kw'>match</span> <span class='ident'>Error</span>::<span class='ident'>from_couch</span>(<span class='ident'>str</span>) {
-            <span class='ident'>Query</span> {<span class='kw-2'>ref</span> <span class='ident'>error</span>, ..} <span class='op'>=&gt;</span> <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>error</span>, <span class='string'>&quot;not_found&quot;</span>),
-            _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;I was expecting query error&quot;</span>)
+            <span class='ident'>Query</span> { <span class='kw-2'>ref</span> <span class='ident'>error</span>, .. } <span class='op'>=&gt;</span> <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>error</span>, <span class='string'>&quot;not_found&quot;</span>),
+            _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;I was expecting query error&quot;</span>),
 
         }
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>from_couch_works_with_different_hashmap_values</span> () {
+    <span class='kw'>fn</span> <span class='ident'>from_couch_works_with_different_hashmap_values</span>() {
         <span class='kw'>let</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;{\&quot;oops\&quot;:\&quot;not_found\&quot;,\&quot;what_happened\&quot;:\&quot;Database does not exist.\&quot;}&quot;</span>;
         <span class='kw'>match</span> <span class='ident'>Error</span>::<span class='ident'>from_couch</span>(<span class='ident'>str</span>) {
-            <span class='ident'>Query</span> {<span class='kw-2'>ref</span> <span class='ident'>error</span>, <span class='kw-2'>ref</span> <span class='ident'>description</span>} <span class='op'>=&gt;</span> {
+            <span class='ident'>Query</span> { <span class='kw-2'>ref</span> <span class='ident'>error</span>, <span class='kw-2'>ref</span> <span class='ident'>description</span> } <span class='op'>=&gt;</span> {
                 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>error</span>, <span class='string'>&quot;Unknown&quot;</span>);
                 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>description</span>, <span class='string'>&quot;unknown reason&quot;</span>);
             }
-            _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;I was expecting query error&quot;</span>)
+            _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;I was expecting query error&quot;</span>),
         }
     }
 }
@@ -392,11 +373,11 @@
     
 
     <script>
-        window.rootPath = "../../../";
+        window.rootPath = "../../";
         window.currentCrate = "mango_smoothie";
     </script>
-    <script src="../../../jquery.js"></script>
-    <script src="../../../main.js"></script>
-    <script defer src="../../../search-index.js"></script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>
