@@ -7,13 +7,7 @@ use std::collections::HashMap;
 use serde_json;
 use serde_json::Error as JsonError;
 
-use self::Error::{
-    Json,
-    Http,
-    Io,
-    Query,
-    Url
-};
+use self::Error::{Json, Http, Io, Query, Url};
 
 #[derive(Debug)]
 pub enum Error {
@@ -21,32 +15,29 @@ pub enum Error {
     Http(HyperError),
     Url(ParseError),
     Io(io::Error),
-    Query {
-        error: String,
-        description: String
-    }
+    Query { error: String, description: String },
 }
 
 impl Error {
     pub fn from_couch(msg: &str) -> Error {
         let convert = match serde_json::from_str::<HashMap<String, String>>(msg) {
             Ok(map) => map,
-            Err(e) => return Json(e)
+            Err(e) => return Json(e),
         };
 
         let err = match convert.get("error") {
             Some(msg) => msg.to_string(),
-            None => "Unknown".to_string()
+            None => "Unknown".to_string(),
         };
 
         let description = match convert.get("reason") {
             Some(msg) => msg.to_string(),
-            None => "unknown reason".to_string()
+            None => "unknown reason".to_string(),
         };
 
         Query {
             error: err,
-            description: description
+            description: description,
         }
     }
 }
@@ -58,7 +49,7 @@ impl fmt::Display for Error {
             Http(ref e) => write!(f, "{}", e),
             Io(ref e) => write!(f, "{}", e),
             Url(ref e) => write!(f, "{}", e),
-            Query{ref error, ref description} => write!(f, "{}:{}", error, description)
+            Query { ref error, ref description } => write!(f, "{}:{}", error, description),
         }
     }
 }
@@ -66,11 +57,11 @@ impl fmt::Display for Error {
 impl StdError for Error {
     fn description(&self) -> &str {
         match *self {
-            Json( ref e ) => e.description(),
-            Http( ref e ) => e.description(),
-            Io( ref e ) => e.description(),
-            Url( ref e ) => e.description(),
-            Query { .. } => "CouchDB responded with an error"
+            Json(ref e) => e.description(),
+            Http(ref e) => e.description(),
+            Io(ref e) => e.description(),
+            Url(ref e) => e.description(),
+            Query { .. } => "CouchDB responded with an error",
         }
     }
 
@@ -80,7 +71,7 @@ impl StdError for Error {
             Http(ref e) => Some(e),
             Io(ref e) => Some(e),
             Url(ref e) => Some(e),
-            Query{ .. } => None
+            Query { .. } => None,
         }
     }
 }
@@ -113,35 +104,34 @@ impl From<io::Error> for Error {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use super::Error::*;
 
     #[test]
-    fn from_couch_warns_on_json_parse_error () {
+    fn from_couch_warns_on_json_parse_error() {
         match Error::from_couch("This will not parse") {
             Json(_) => assert!(true),
-            _ => panic!("I was expecting a Json error!")
+            _ => panic!("I was expecting a Json error!"),
         }
     }
 
     #[test]
-    fn from_couch_returns_parsed_json_error () {
+    fn from_couch_returns_parsed_json_error() {
         let str = "{\"error\":\"not_found\",\"reason\":\"Database does not exist.\"}";
         match Error::from_couch(str) {
-            Query {ref error, ..} => assert_eq!(error, "not_found"),
-            _ => panic!("I was expecting query error")
+            Query { ref error, .. } => assert_eq!(error, "not_found"),
+            _ => panic!("I was expecting query error"),
 
         }
     }
 
     #[test]
-    fn from_couch_works_with_different_hashmap_values () {
+    fn from_couch_works_with_different_hashmap_values() {
         let str = "{\"oops\":\"not_found\",\"what_happened\":\"Database does not exist.\"}";
         match Error::from_couch(str) {
-            Query {ref error, ref description} => {
+            Query { ref error, ref description } => {
                 assert_eq!(error, "Unknown");
                 assert_eq!(description, "unknown reason");
             }
-            _ => panic!("I was expecting query error")
+            _ => panic!("I was expecting query error"),
         }
     }
 }
