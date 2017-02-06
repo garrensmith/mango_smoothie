@@ -22,5 +22,6 @@ fn queries_index() {
     let result = query_resp.unwrap();
     assert_eq!(result.docs.len(), 5);
     let doc = &result.docs[0];
-    assert_eq!(doc.get("class").unwrap().as_str().unwrap(), "mammal");
+    //assert_eq!(doc.get("class").unwrap().as_str().unwrap(), "mammal");
+    assert_eq!(doc["class"], "mammal");
 }

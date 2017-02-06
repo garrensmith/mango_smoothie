@@ -55,7 +55,7 @@
 //! let query_resp = db.query_index(query).unwrap();
 //! assert_eq!(result.docs.len(), 5);
 //! let doc = &result.docs[0];
-//! assert_eq!(doc.get("class").unwrap().as_str().unwrap(), "mammal");
+//! assert_eq!(doc["class"], "mammal");
 //! ```
 
 
